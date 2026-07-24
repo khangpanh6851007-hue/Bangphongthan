@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Phong Thần - Cung Trời Hóa Lạc</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body {
+            background: #050515;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container { width: 100%; max-width: 950px; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .card {
+            background: rgba(11, 29, 58, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        h1, h2 { color: #ffd700; text-align: center; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #b0c4de; font-size: 14px; }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 10px; background: #050515;
+            border: 1px solid #ffd700; border-radius: 5px; color: #fff; font-size: 14px;
+        }
+        .input-group textarea { resize: vertical; height: 80px; }
+        .btn {
+            width: 100%; padding: 12px; background: #ffd700; border: none;
+            border-radius: 5px; color: #050515; font-weight: bold; font-size: 16px;
+            cursor: pointer; margin-top: 10px; text-transform: uppercase;
+        }
+        .btn:hover { background: #ffea6c; }
+        .btn-secondary { background: #4a6fa5; color: #fff; margin-top: 5px; }
+        .btn-secondary:hover { background: #5c85c2; }
+        .switch { text-align: center; margin-top: 15px; font-size: 14px; color: #b0c4de; }
+        .switch span { color: #ffd700; text-decoration: none; font-weight: bold; cursor: pointer; }
+        
+        .dashboard { background: rgba(11, 29, 58, 0.9); border: 2px solid #ffd700; border-radius: 15px; padding: 25px; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .btn-action-group { display: flex; gap: 10px; align-items: center; }
+        .btn-logout { background: #ff4d4d; color: white; padding: 8px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-edit-profile { background: #ffd700; color: #050515; padding: 8px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .pagination {
+            display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; font-size: 14px;
+        }
+        .pagination button {
+            background: #ffd700; color: #050515; border: none; padding: 6px 14px; border-radius: 4px; font-weight: bold; cursor: pointer;
+        }
+        .pagination button:disabled { background: #4a6fa5; color: #a0a0a0; cursor: not-allowed; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 215, 0, 0.2); }
+        th { color: #ffd700; background: rgba(255, 215, 0, 0.1); font-size: 14px; }
+        td { font-size: 14px; }
+        
+        .clickable-name { color: #fff; font-weight: bold; cursor: pointer; }
+        .clickable-name:hover { color: #ffd700; text-decoration: underline; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #0b1d3a; border: 2px solid #ffd700; border-radius: 15px;
+            padding: 30px; width: 90%; max-width: 450px; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: #ffd700; font-size: 20px; cursor: pointer; font-weight: bold;
+        }
+        .info-row { margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+        .info-row span { color: #ffd700; font-weight: bold; }
+
+        .alert {
+            position: fixed; bottom: 20px; right: 20px; background: #ffd700; color: #050515;
+            padding: 12px 20px; border-radius: 5px; font-weight: bold; display: none; z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ĐĂNG NHẬP -->
+        <div id="login-view" class="view active">
+            <div class="card">
+                <h1>Cung Trời Hóa Lạc</h1>
+                <form onsubmit="login(event)">
+                    <div class="input-group">
+                        <label>Đạo Hiệu (Tài khoản)</label>
+                        <input type="text" id="log-user" required placeholder="Nhập tài khoản...">
+                    </div>
+                    <div class="input-group">
+                        <label>Pháp Ấn (Mật khẩu)</label>
+                        <input type="password" id="log-pass" required placeholder="Nhập mật khẩu...">
+                    </div>
+                    <button type="submit" class="btn">Đăng Nhập</button>
+                </form>
+                <div class="switch">Chưa có tài khoản? <span onclick="showView('reg-view')">Đăng ký ngay</span></div>
+            </div>
+        </div>
+
+        <!-- ĐĂNG KÝ -->
+        <div id="reg-view" class="view">
+            <div class="card">
+                <h1>Tạo Đạo Hiệu</h1>
+                <form onsubmit="register(event)">
+                    <div class="input-group">
+                        <label>Đạo Hiệu Mới</label>
+                        <input type="text" id="reg-user" required placeholder="Chọn tài khoản...">
+                    </div>
+                    <div class="input-group">
+                        <label>Pháp Ấn</label>
+                        <input type="password" id="reg-pass" required placeholder="Tạo mật khẩu...">
+                    </div>
+                    <button type="submit" class="btn">Đăng Ký</button>
+                </form>
+                <div class="switch">Đã có tài khoản? <span onclick="showView('login-view')">Đăng nhập</span></div>
+            </div>
+        </div>
+
+        <!-- NHẬP KEY -->
+        <div id="key-view" class="view">
+            <div class="card">
+                <h1>Thiên Lệnh Khóa</h1>
+                <p style="font-size: 13px; color: #b0c4de; margin-bottom: 20px; text-align: center;">Nhập Thiên Ký Key (51007Panh) để mở phong ấn Sửa Chân Thân & Đạo Hạnh.</p>
+                <form onsubmit="verifyKey(event)">
+                    <div class="input-group">
+                        <label>Thiên Ký Key</label>
+                        <input type="password" id="secret-key" required placeholder="Nhập key mở khóa...">
+                    </div>
+                    <button type="submit" class="btn">Mở Phong Ấn</button>
+                    <button type="button" class="btn btn-secondary" onclick="showView('dash-view')">Quay lại</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CHỈNH SỬA CHÂN THÂN & ĐẠO HẠNH -->
+        <div id="edit-view" class="view">
+            <div class="card">
+                <h1>Chân Thân & Đạo Hạnh</h1>
+                <form onsubmit="updateProfile(event)">
+                    <div class="input-group">
+                        <label>Đạo Hiệu</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Cảnh Giới Tu Vi</label>
+                        <select id="edit-realm">
+                            <option value="Hóa Lạc Sơ Cảnh">Hóa Lạc Sơ Cảnh</option>
+                            <option value="Thiện Pháp Tông Sư">Thiện Pháp Tông Sư</option>
+                            <option value="Đại La Kim Tiên Cung Trời">Đại La Kim Tiên Cung Trời</option>
+                            <option value="Hóa Lạc Thánh Tôn">Hóa Lạc Thánh Tôn</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Chức Vụ</label>
+                        <input type="text" id="edit-position" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Đạo Hạnh (Điểm tu vi)</label>
+                        <input type="number" id="edit-score" required placeholder="Nhập điểm đạo hạnh...">
+                    </div>
+                    <div class="input-group">
+                        <label>Viết Nội Dung / Thần Thông Bản Mệnh</label>
+                        <textarea id="edit-desc" placeholder="Viết nội dung tùy ý..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Lưu Vào Bảng Hạng</button>
+                    <button type="button" class="btn btn-secondary" onclick="showView('dash-view')">Quay lại</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- DASHBOARD & BẢNG PHONG THẦN -->
+        <div id="dash-view" class="view">
+            <div class="dashboard">
+                <div class="dash-header">
+                    <div>
+                        <h2>Bảng Phong Thần (1 - 10.000)</h2>
+                        <span id="user-display" style="color: #ffd700; font-weight: bold;"></span>
+                    </div>
+                    <div class="btn-action-group">
+                        <button class="btn-edit-profile" onclick="openKeyView()">Sửa Chân Thân</button>
+                        <button class="btn-logout" onclick="logout()">Đăng Xuất</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hạng</th>
+                                <th>Đạo Hiệu</th>
+                                <th>Chức Vụ Cung Trời</th>
+                                <th>Cảnh Giới</th>
+                                <th>Đạo Hạnh</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rank-list"></tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prev-btn" onclick="changePage(-1)">Trang Trước</button>
+                    <span id="page-indicator">Trang 1 / 1000</span>
+                    <button id="next-btn" onclick="changePage(1)">Trang Sau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHI TIẾT -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2>📜 Thiên Thư Tịch</h2>
+            <div class="info-row">Hạng: <span id="modal-rank"></span></div>
+            <div class="info-row">Đạo Hiệu: <span id="modal-name"></span></div>
+            <div class="info-row">Cảnh Giới: <span id="modal-realm"></span></div>
+            <div class="info-row">Chức Vụ: <span id="modal-position"></span></div>
+            <div class="info-row">Đạo Hạnh: <span id="modal-score"></span></div>
+            <div class="info-row">Nội Dung / Thần Thông:<br><span id="modal-desc" style="color: #fff; font-style: italic; display: block; margin-top: 5px;"></span></div>
+        </div>
+    </div>
+
+    <div id="alert-box" class="alert">Thông báo</div>
+
+    <script>
+        let gods = [];
+        const possibleRealms = ["Hóa Lạc Sơ Cảnh", "Thiện Pháp Tông Sư", "Đại La Kim Tiên Cung Trời", "Hóa Lạc Thánh Tôn"];
+        const possiblePositions = ["Tu Di Sứ Giả", "Hộ Pháp Thiên Cung", "Tán Tiên Tiêu Dao", "Pháp Vương Cung Trời", "Thanh Tịnh Tiên Tôn"];
+
+        function initHeavenList() {
+            const savedGods = localStorage.getItem('heaven_gods_list');
+            if (savedGods) {
+                gods = JSON.parse(savedGods);
+                sortGodsByScore();
+                return;
+            }
+
+            gods.push({ rank: 1, username: "admin", name: "Đế Thích Thiên", score: 999999, realm: "Hóa Lạc Thánh Tôn", position: "Chủ Tể Cung Trời Hóa Lạc", desc: "Thống lĩnh chư thiên cõi Hóa Lạc." });
+            for (let i = 2; i <= 10000; i++) {
+                gods.push({
+                    rank: i,
+                    name: `Tiên Nhân số ${i}`,
+                    score: Math.max(100, 900000 - (i * 80)),
+                    realm: possibleRealms[Math.floor(Math.random() * possibleRealms.length)],
+                    position: possiblePositions[Math.floor(Math.random() * possiblePositions.length)],
+                    desc: `Vị tiên nhân tu hành lâu năm tại cõi Hóa Lạc.`
+                });
+            }
+            sortGodsByScore();
+        }
+
+        function sortGodsByScore() {
+            gods.sort((a, b) => b.score - a.score);
+            gods.forEach((g, index) => {
+                g.rank = index + 1;
+            });
+            saveGodsToStorage();
+        }
+
+        initHeavenList();
+
+        function saveGodsToStorage() {
+            localStorage.setItem('heaven_gods_list', JSON.stringify(gods));
+        }
+
+        let currentUser = null;
+        let currentPage = 1;
+        const pageSize = 10;
+        const CORRECT_KEY = "51007Panh";
+
+        function showAlert(msg) {
+            const box = document.getElementById('alert-box');
+            box.innerText = msg;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 2500);
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function register(e) {
+            e.preventDefault();
+            const u = document.getElementById('reg-user').value.trim();
+            const p = document.getElementById('reg-pass').value.trim();
+            if(localStorage.getItem('acc_' + u)) { showAlert('Đã tồn tại!'); return; }
+            localStorage.setItem('acc_' + u, p);
+            showAlert('Đăng ký thành công!');
+            showView('login-view');
+        }
+
+        function login(e) {
+            e.preventDefault();
+            const u = document.getElementById('log-user').value.trim();
+            const p = document.getElementById('log-pass').value.trim();
+            const savedPass = localStorage.getItem('acc_' + u);
+            
+            if ((savedPass && savedPass === p) || (u === 'admin' && p === '123456') || !savedPass) {
+                currentUser = u;
+                document.getElementById('user-display').innerText = "Đạo hữu: " + u;
+                let existingGod = gods.find(g => g.username === u);
+                if(!existingGod) {
+                    gods.push({ 
+                        rank: 0, 
+                        username: u, 
+                        name: u, 
+                        score: 750000, 
+                        realm: "Thiện Pháp Tông Sư", 
+                        position: "Hộ Pháp Thiên Cung", 
+                        desc: "Mới phi thăng." 
+                    });
+                    sortGodsByScore();
+                }
+                currentPage = 1;
+                renderTable();
+                showView('dash-view');
+                showAlert('Chào mừng trở lại!');
+            } else {
+                showAlert('Sai thông tin đăng nhập!');
+            }
+        }
+
+        function logout() { currentUser = null; showView('login-view'); showAlert('Đã đăng xuất.'); }
+        function openKeyView() { document.getElementById('secret-key').value = ''; showView('key-view'); }
+        
+        function verifyKey(e) {
+            e.preventDefault();
+            if (document.getElementById('secret-key').value.trim() === CORRECT_KEY) {
+                showAlert('Mở phong ấn thành công!');
+                openEditView();
+            } else { showAlert('Key không chính xác!'); }
+        }
+
+        function openEditView() {
+            let godData = gods.find(g => g.username === currentUser);
+            if(godData) {
+                document.getElementById('edit-name').value = godData.name;
+                document.getElementById('edit-realm').value = godData.realm;
+                document.getElementById('edit-position').value = godData.position;
+                document.getElementById('edit-score').value = godData.score;
+                document.getElementById('edit-desc').value = godData.desc;
+            }
+            showView('edit-view');
+        }
+
+        function updateProfile(e) {
+            e.preventDefault();
+            let godData = gods.find(g => g.username === currentUser);
+            if(godData) {
+                godData.name = document.getElementById('edit-name').value.trim();
+                godData.realm = document.getElementById('edit-realm').value;
+                godData.position = document.getElementById('edit-position').value.trim();
+                godData.score = Number(document.getElementById('edit-score').value);
+                godData.desc = document.getElementById('edit-desc').value.trim();
+                
+                sortGodsByScore();
+            }
+            renderTable();
+            showAlert('Đã cập nhật chân thân & đạo hạnh lên bảng hạng!');
+            showView('dash-view');
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('rank-list');
+            tbody.innerHTML = '';
+            const start = (currentPage - 1) * pageSize;
+            gods.slice(start, start + pageSize).forEach(g => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>#${g.rank}</b></td>
+                        <td><span class="clickable-name" onclick="viewDetail(${g.rank})">${g.name}</span></td>
+                        <td style="color: #b0c4de;">${g.position}</td>
+                        <td>${g.realm}</td>
+                        <td style="color: #ffd700;">${Number(g.score).toLocaleString()}</td>
+                    </tr>`;
+            });
+            const totalPages = Math.ceil(gods.length / pageSize);
+            document.getElementById('page-indicator').innerText = `Trang ${currentPage} / ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        function changePage(dir) {
+            currentPage += dir;
+            renderTable();
+        }
+
+        function viewDetail(rankNum) {
+            const god = gods.find(g => g.rank === rankNum);
+            if(god) {
+                document.getElementById('modal-rank').innerText = "#" + god.rank;
+                document.getElementById('modal-name').innerText = god.name;
+                document.getElementById('modal-realm').innerText = god.realm;
+                document.getElementById('modal-position').innerText = god.position;
+                document.getElementById('modal-score').innerText = Number(god.score).toLocaleString();
+                document.getElementById('modal-desc').innerText = god.desc;
+                document.getElementById('detail-modal').style.display = 'flex';
+            }
+        }
+
+        function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+    </script>
+</body>
+</html>
