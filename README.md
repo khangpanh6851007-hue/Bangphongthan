@@ -1,30 +1,78 @@
-# 📜 Bảng Phong Thần - Cung Trời Hóa Lạc
+# Bảng Phong Thần -- Cung Trời Hóa Lạc
 
-Ứng dụng web tiên hiệp tương tác mang phong cách tu chân, cho phép người dùng đăng ký đạo hiệu, quản lý chân thân, tích lũy đạo hạnh và tra cứu bảng xếp hạng chư tiên trong cõi Hóa Lạc.
+Website tĩnh chạy trực tiếp trên trình duyệt, giao diện tiếng Việt, tối
+ưu cho điện thoại và máy tính.
 
----
+## Nội dung
 
-## 🌟 Tính Năng Nổi Bật
+-   Trang đăng nhập và đăng ký tài khoản.
+-   Sảnh Bảng Phong Thần với bảng xếp hạng.
+-   Menu chủ đề tiên hiệp, vòng nhân vật chuyển động và hai hộ vệ cầm
+    kiếm.
+-   Khu vực tính năng trò chơi và trang Quản Trị Viên.
+-   Dữ liệu được lưu bằng `localStorage` trên trình duyệt hiện tại.
 
-* **Hệ Thống Đạo Hiệu & Pháp Ấn**: Đăng ký và đăng nhập tài khoản cá nhân được lưu trữ trực tiếp trên trình duyệt (`localStorage`).
-* **Bảng Phong Thần Động (1 - 10.000 Hạng)**: 
-  * Tự động sắp xếp thứ hạng dựa trên điểm **Đạo Hạnh** (Điểm tu vi).
-  * Hỗ trợ phân trang mượt mà giúp dễ dàng tra cứu hàng ngàn vị tiên nhân.
-* **Bảo Mật Thiên Lệnh Khóa**: Yêu cầu nhập **Thiên Ký Key** chính xác để mở phong ấn chỉnh sửa thông tin cá nhân.
-* **Thiên Thư Tịch (Chi Tiết Tiên Nhân)**: Xem thông tin chi tiết, cảnh giới tu vi, chức vụ và thần thông bản mệnh của bất kỳ đạo hữu nào trên bảng xếp hạng.
+## Cấu trúc GitHub
 
----
+``` text
+.
+├── index.html
+├── README.md
+└── .github/
+    └── workflows/
+        └── deploy.yml
+```
 
-## 🛠️ Công Nghệ Sử Dụng
+## Chạy thử trên máy
 
-* **HTML5 / CSS3**: Giao diện tùy chỉnh hoàn toàn bằng CSS thuần, mang đậm phong cách huyền huyễn (tông màu xanh thẳm và ánh vàng kim).
-* **JavaScript (Vanilla)**: Xử lý logic toàn bộ ứng dụng, quản lý trạng thái, sắp xếp bảng xếp hạng và lưu trữ dữ liệu cục bộ.
+1.  Tải hoặc clone repository.
+2.  Mở `index.html` bằng trình duyệt hiện đại.
+3.  Đăng ký tài khoản mới hoặc đăng nhập bằng tài khoản đã tạo trên
+    chính trình duyệt đó.
 
----
+Không cần cài Node.js, không cần build và không cần Firebase cho phiên
+bản này.
 
-## 🚀 Hướng Dẫn Trải Nghiệm
+## Triển khai GitHub Pages
 
-1. Tải toàn bộ mã nguồn và lưu thành một tệp có định dạng `.html` (ví dụ: `index.html`).
-2. Mở tệp đó bằng bất kỳ trình duyệt web hiện đại nào (Chrome, Firefox, Edge, Safari).
-3. **Đăng nhập nhanh hoặc Đăng ký tài khoản mới** để bắt đầu hành trình tu luyện.
-4. Nhấn **"Sửa Chân Thân"** và nhập **Thiên Ký Key** (`51007Panh`) để cập nhật cảnh giới và điểm đạo hạnh của bạn lên Bảng Phong Thần.
+1.  Tạo repository trên GitHub.
+2.  Đưa `index.html`, `README.md` và thư mục `.github/workflows/` lên
+    nhánh `main`.
+3.  Vào **Settings → Pages**.
+4.  Trong **Build and deployment**, chọn **Source: GitHub Actions**.
+5.  Push commit mới lên `main`, hoặc vào **Actions** và chạy workflow
+    **Deploy to GitHub Pages**.
+6.  Sau khi workflow hoàn tất, mở URL GitHub Pages hiển thị trong
+    **Settings → Pages**.
+
+Workflow nằm tại `.github/workflows/deploy.yml`. Nó triển khai website
+tĩnh từ thư mục gốc repository.
+
+## Lưu ý quan trọng về tài khoản và dữ liệu
+
+Phiên bản hiện tại là website tĩnh, không có máy chủ xác thực hoặc cơ sở
+dữ liệu dùng chung:
+
+-   Tài khoản đăng ký và dữ liệu trò chơi chỉ lưu trong `localStorage`
+    của trình duyệt và thiết bị đang dùng.
+-   Dữ liệu không tự đồng bộ giữa người chơi, thiết bị hoặc trình duyệt
+    khác.
+-   Xóa dữ liệu trình duyệt có thể làm mất tài khoản và tiến trình đã
+    lưu trên thiết bị đó.
+-   Thông tin đăng nhập Quản Trị Viên và khóa chỉnh sửa đang được kiểm
+    tra trong JavaScript phía trình duyệt. Người xem mã nguồn có thể đọc
+    được chúng; đây **không phải** cơ chế bảo mật phù hợp cho website
+    công khai.
+-   Không dùng phiên bản này để lưu thông tin nhạy cảm, tài sản có giá
+    trị hoặc vận hành quản trị thật. Muốn bảo mật thực tế cần backend
+    xác thực, phân quyền và cơ sở dữ liệu phía máy chủ.
+
+## Cập nhật website
+
+Chỉnh sửa `index.html`, sau đó commit và push lên nhánh `main`. GitHub
+Actions sẽ tự triển khai lại.
+
+## Giấy phép
+
+Chưa chỉ định giấy phép. Nếu muốn cho phép người khác sử dụng hoặc chỉnh
+sửa mã nguồn, hãy bổ sung tệp `LICENSE` với giấy phép phù hợp.
